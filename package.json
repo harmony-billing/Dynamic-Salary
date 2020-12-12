@@ -1,0 +1,19 @@
+{
+  "name": "dynamic-salary",
+  "description": "A comfortable way to pay salaries in crypto across chains and track your income for taxation.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "homepage": "https://github.com/harmony-billing/billing",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harmony-billing/billing"
+  },
+  "bugs": {
+    "url": "https://github.com/harmony-billing/billing/issues"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "KevTVKevin, Sardoniac"
+}
