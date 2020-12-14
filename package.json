@@ -11,9 +11,19 @@
   "bugs": {
     "url": "https://github.com/harmony-billing/billing/issues"
   },
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r ts-node/register src/tests/*"
   },
-  "author": "KevTVKevin, Sardoniac"
+  "author": "KevTVKevin, Sardoniac",
+  "devDependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^8.2.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1",
+    "ts-node": "^9.1.1"
+  },
+  "dependencies": {
+    "typescript": "^4.1.3"
+  }
 }
