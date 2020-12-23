@@ -13,7 +13,7 @@
   },
   "main": "index.ts",
   "scripts": {
-    "index": "ts-node src",
+    "index": "ts-node src/index.ts",
     "test": "mocha -r ts-node/register src/tests/*"
   },
   "author": "KevTVKevin, Sardoniac",
@@ -26,10 +26,13 @@
   },
   "dependencies": {
     "@harmony-js/core": "^0.1.56",
+    "bignumber.js": "^9.0.1",
     "bridge-sdk": "^1.0.17",
+    "node-fetch": "^2.6.1",
     "superagent": "^6.1.0",
     "tslib": "^2.0.3",
     "typescript": "^4.1.3",
-    "web3": "^1.3.1"
+    "web3": "^1.3.0",
+    "web3-eth-contract": "^1.3.0"
   }
 }
