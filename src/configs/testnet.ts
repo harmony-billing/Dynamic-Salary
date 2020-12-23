@@ -1,6 +1,8 @@
 let ethConfig = {
     testnet: true,
     nodeURL: 'https://kovan.infura.io/v3/acb534b53d3a47b09d7886064f8e51b6',
+    etherscanUrl: "https://api-kovan.etherscan.io",
+    etherscanAPIKey: "I7K8X9VNXHVE8ZQTRY3JDKE6DR42UYBPUM",
     contracts: {
         busd: '0xb0e18106520d05adA2C7fcB1a95f7db5e3f28345',
         link: '0x69FcFe4aFF2778d15f186AcF8845a0Dc0ec08CC7',
