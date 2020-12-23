@@ -1,15 +1,7 @@
 import { mainnet } from './configs/mainnet'
 import { testnet } from './configs/testnet'
-import { Harmony } from "@harmony-js/core"
 import * as Data from './utils'
-let Web3 = require('web3')
-import {
-    ChainID,
-    ChainType,
-    hexToNumber
-} from '@harmony-js/utils'
 import { OperationCanceledException } from 'typescript'
-import { EthMethods } from 'bridge-sdk/lib/blockchain/eth/EthMethods'
 
 export enum TYPE {
     ETH = "Ethereum",
@@ -27,7 +19,9 @@ export class DynamicSalary {
         senderType: TYPE,
         senderAddress: string, 
         receiverType: TYPE,
-        receiverAddress: string, 
+        receiverAddress: string,
+        tokenHmyContracts?: Array<any>,
+        tokenEthContracts?: Array<any>
         ) => {
             
             let data = []
@@ -130,28 +124,14 @@ export class DynamicSalary {
                 data = transactions
 
             } else if (senderType == TYPE.ETH && receiverType == TYPE.ONE) {
-
+                data = await Data.getBridgeData(this.configs, senderAddress, receiverAddress, "eth_to_one").then(res => {
+                    return res
+                })
             } else if (senderType == TYPE.ONE && receiverType == TYPE.ETH) {
-
+                data = await Data.getBridgeData(this.configs, receiverAddress, senderAddress, "one_to_eth").then(res => {
+                    return res
+                })
             }
-
-            /*receiverData.forEach(element => {
-                console.log(element['to'])
-            });
-            let contractAddresses = [
-                this.configs.ethConfig.contracts.busd,
-                this.configs.ethConfig.contracts.busdManager,
-                this.configs.ethConfig.contracts.erc20Manager,
-                this.configs.ethConfig.contracts.link,
-                this.configs.ethConfig.contracts.linkManager
-            ]
-            //console.log(contractAddresses)
-            senderData.forEach(element => {
-                //console.log(element['contractAddress'])
-                if (contractAddresses.includes(element["from"])) {
-                    console.log(element)
-                }
-            });*/
             
             return data
 
@@ -161,10 +141,10 @@ export class DynamicSalary {
 let ds = new DynamicSalary(testnet)
 
 ds.getTransactionData(
+    TYPE.ONE,
+    "one1akph3q7a0vtfzad2lau0cfvsvkrnc5fzf487ly",
     TYPE.ETH,
-    "0x4778D03bB3E169b920Cbf826F9A931A15574fE28", 
-    TYPE.ETH,
-    "0x89Cb9b988ECe933becbA1001aEd98BdAa660Ef29", 
+    "0x430506383F1Ac31F5FdF5b49ADb77faC604657B2", 
 ).then((data) => {
     console.log(data)
 })

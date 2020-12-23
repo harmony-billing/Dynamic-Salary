@@ -55,3 +55,18 @@ export async function getEthData(config, address, startBlock) {
         }
     })
 }
+
+export async function getBridgeData(config, ethAddress, oneAddress, type) {
+    return await fetch(`${config.hmyConfig.bridgeUrl}/operations/?size=100000000000000000`)
+    .then(res => {
+        return res.json()
+    }).then(res => {
+        let transactions = []
+        res['content'].forEach(element => {
+            if (element['type'] == type && element['ethAddress'] == ethAddress.toLowerCase() && element['oneAddress'] == oneAddress.toLowerCase()) {
+                transactions.push(element)
+            }
+        })
+        return transactions
+    })
+}
