@@ -1,11 +1,15 @@
 import { mainnet } from './configs/mainnet'
 import { testnet } from './configs/testnet'
 import { Harmony } from "@harmony-js/core"
+import * as Data from './utils'
+let Web3 = require('web3')
 import {
     ChainID,
     ChainType,
     hexToNumber
 } from '@harmony-js/utils'
+import { OperationCanceledException } from 'typescript'
+import { EthMethods } from 'bridge-sdk/lib/blockchain/eth/EthMethods'
 
 export enum TYPE {
     ETH = "Ethereum",
@@ -19,7 +23,7 @@ export class DynamicSalary {
         this.configs = configs
     }
 
-    getTransactionDataFromAdresses = async (
+    getTransactionData = async (
         senderType: TYPE,
         senderAddress: string, 
         receiverType: TYPE,
@@ -43,47 +47,45 @@ export class DynamicSalary {
                 }
             )
             
+            let senderData = {}
+
             if (senderType == TYPE.ETH) {
-                eth.blockchain
-                    .getTransactionCount({
-                        address: senderAddress,
-                    })
-                    .then((response) => {
-                        console.log(hexToNumber(response.result))
-                    })
+                Data.getEthData(this.configs, senderAddress).then((res) => {
+                    console.log(res)
+                })
             } else if (senderType == TYPE.ONE) {
-                hmy.messenger.send(`{
-                    "jsonrpc": "2.0",
-                    "method": "hmyv2_getTransactionsHistory",
-                    "params": [{
-                        "address": "one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7",
-                        "pageIndex": 0,
-                        "pageSize": 1000,
-                        "fullTx": true,
-                        "txType": "ALL",
-                        "order": "ASC"
-                    }],
-                    "id": 1
-                }`)
-                    .then((response) => {
-                        console.log(response)
-                    })
+                Data.getHmyData(this.configs.hmyConfig.nodeURL, senderAddress).then((res) => {
+                    senderData = res
+                })
             }
+
+            if (!senderData) {
+                throw OperationCanceledException
+            }
+
+            let receiverData = {}
 
             if (receiverType = TYPE.ETH) {
-
+                Data.getEthData(this.configs, senderAddress).then((res) => {
+                    console.log(res)
+                })
             } else if (receiverType = TYPE.ONE) {
-
+                Data.getHmyData(this.configs.hmyConfig.nodeURL, receiverAddress).then((res) => {
+                    receiverData = res
+                })
             }
-    }
 
-}
+            if (!receiverData) {
+                throw OperationCanceledException
+            }
+        }
+    }   
 
 let ds = new DynamicSalary(testnet)
 
-ds.getTransactionDataFromAdresses(
-    TYPE.ONE,
-    "one1we0fmuz9wdncqljwkpgj79k49cp4jrt5hpy49j", 
+ds.getTransactionData(
+    TYPE.ETH,
+    "0x4778D03bB3E169b920Cbf826F9A931A15574fE28", 
     TYPE.ONE,
     "one1xlk8jnxw68nwksxtqt39t0ggghfnuex5pak7j4", 
     new Date(), 
@@ -91,3 +93,7 @@ ds.getTransactionDataFromAdresses(
 ).then((data) => {
     console.log(data)
 })
+
+
+
+    

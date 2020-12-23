@@ -1,6 +1,8 @@
 let ethConfig = {
     testnet: false,
     nodeURL: 'https://mainnet.infura.io/v3/acb534b53d3a47b09d7886064f8e51b6',
+    etherscanUrl: "https://api.etherscan.io",
+    etherscanAPIKey: "I7K8X9VNXHVE8ZQTRY3JDKE6DR42UYBPUM",
     contracts: {
         busd: '0x4fabb145d64652a948d72533023f6e7a623c7c53',
         link: '0x514910771af9ca656af840dff83e8264ecf986ca',
