@@ -38,8 +38,8 @@ export async function getHmyData(url, address) {
     })
 }
 
-export async function getEthData(config, address) {
-    return await fetch(`${config.ethConfig.etherscanUrl}/api?module=account&action=txlist&address=${address}&startblock=0&endblock=latest&sort=asc&apikey=${config.ethConfig.etherscanAPIKey}`)
+export async function getEthData(config, address, startBlock) {
+    return await fetch(`${config.ethConfig.etherscanUrl}/api?module=account&action=txlist&address=${address}&startblock=${startBlock}&endblock=latest&sort=asc&apikey=${config.ethConfig.etherscanAPIKey}`)
     .then((res) => {
         return res.json()
     }).then(res => {
