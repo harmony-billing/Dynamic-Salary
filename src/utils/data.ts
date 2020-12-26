@@ -1,5 +1,4 @@
 import * as fetch from 'node-fetch'
-import { testnet } from '../configs/testnet'
 
 export async function getHmyData(url, address) {
     return await fetch(url,

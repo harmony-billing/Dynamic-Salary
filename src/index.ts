@@ -1,6 +1,6 @@
 import { mainnet } from './configs/mainnet'
 import { testnet } from './configs/testnet'
-import * as Data from './utils'
+import * as Utils from './utils'
 import { OperationCanceledException } from 'typescript'
 
 export enum TYPE {
@@ -20,8 +20,6 @@ export class DynamicSalary {
         senderAddress: string, 
         receiverType: TYPE,
         receiverAddress: string,
-        tokenHmyContracts?: Array<any>,
-        tokenEthContracts?: Array<any>
         ) => {
             
             let data = []
@@ -29,11 +27,11 @@ export class DynamicSalary {
             let senderData: any
 
             if (senderType == TYPE.ETH) {
-                senderData = await Data.getEthData(this.configs, senderAddress, 0).then((res) => {
+                senderData = await Utils.getEthData(this.configs, senderAddress, 0).then((res) => {
                     return res
                 })
             } else if (senderType == TYPE.ONE) {
-                senderData = await Data.getHmyData(this.configs.hmyConfig.nodeURL, senderAddress).then((res) => {
+                senderData = await Utils.getHmyData(this.configs.hmyConfig.nodeURL, senderAddress).then((res) => {
                     return res
                 })
             }
@@ -45,11 +43,11 @@ export class DynamicSalary {
             let receiverData: any
 
             if (receiverType == TYPE.ETH) {
-                receiverData = await Data.getEthData(this.configs, receiverAddress, 0).then((res) => {
+                receiverData = await Utils.getEthData(this.configs, receiverAddress, 0).then((res) => {
                     return res
                 })
             } else if (receiverType == TYPE.ONE) {
-                receiverData = await Data.getHmyData(this.configs.hmyConfig.nodeURL, receiverAddress).then((res) => {
+                receiverData = await Utils.getHmyData(this.configs.hmyConfig.nodeURL, receiverAddress).then((res) => {
                     return res
                 })
             }
@@ -124,11 +122,11 @@ export class DynamicSalary {
                 data = transactions
 
             } else if (senderType == TYPE.ETH && receiverType == TYPE.ONE) {
-                data = await Data.getBridgeData(this.configs, senderAddress, receiverAddress, "eth_to_one").then(res => {
+                data = await Utils.getBridgeData(this.configs, senderAddress, receiverAddress, "eth_to_one").then(res => {
                     return res
                 })
             } else if (senderType == TYPE.ONE && receiverType == TYPE.ETH) {
-                data = await Data.getBridgeData(this.configs, receiverAddress, senderAddress, "one_to_eth").then(res => {
+                data = await Utils.getBridgeData(this.configs, receiverAddress, senderAddress, "one_to_eth").then(res => {
                     return res
                 })
             }
@@ -136,6 +134,15 @@ export class DynamicSalary {
             return data
 
         }
+
+        sendOneToOne = async (
+            privateKey: string,
+            receiverAddress: string,
+            amount: number,
+        ) => {
+            return Utils.sendOne(privateKey, receiverAddress, amount, this.configs)
+        }
+
 }   
 
 let ds = new DynamicSalary(testnet)
@@ -147,6 +154,14 @@ ds.getTransactionData(
     "0x430506383F1Ac31F5FdF5b49ADb77faC604657B2", 
 ).then((data) => {
     console.log(data)
+})
+
+ds.sendOneToOne(
+    "0x936224fc6acd1d8e4dab100c054ed7305acf520207b2f0c15257d570d5fd56de",
+    "one1xlk8jnxw68nwksxtqt39t0ggghfnuex5pak7j4",
+    1
+).then(res => {
+    console.log(res)
 })
 
 

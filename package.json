@@ -13,8 +13,7 @@
   },
   "main": "index.ts",
   "scripts": {
-    "index": "ts-node src/index.ts",
-    "test": "mocha -r ts-node/register src/tests/*"
+    "index": "ts-node src/index.ts"
   },
   "author": "KevTVKevin, Sardoniac",
   "devDependencies": {
