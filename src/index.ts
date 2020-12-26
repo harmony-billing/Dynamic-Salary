@@ -143,6 +143,14 @@ export class DynamicSalary {
             return Utils.sendOne(privateKey, receiverAddress, amount, this.configs)
         }
 
+        sendEthToEth = async (
+            privateKey: string,
+            receiverAddress: string,
+            amount: number
+        ) => {
+            return Utils.sendEth(privateKey, receiverAddress, amount, this.configs)
+        }
+
 }   
 
 let ds = new DynamicSalary(testnet)
@@ -159,11 +167,17 @@ ds.getTransactionData(
 ds.sendOneToOne(
     "0x936224fc6acd1d8e4dab100c054ed7305acf520207b2f0c15257d570d5fd56de",
     "one1xlk8jnxw68nwksxtqt39t0ggghfnuex5pak7j4",
-    1
+    0.0000001
 ).then(res => {
     console.log(res)
 })
 
-
+ds.sendEthToEth(
+    "cbcf3af28e37d8b69c4ea5856f2727f57ad01d3e86bec054d71fa83fc246f35b",
+    "0x4778D03bB3E169b920Cbf826F9A931A15574fE28",
+    0.0000001
+).then(res => {
+    console.log(res)
+})
 
     
