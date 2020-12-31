@@ -17,5 +17,6 @@ let hmyConfig = {
 
 export let testnet = {
     ethConfig,
-    hmyConfig
+    hmyConfig,
+    testnet: true
 }

@@ -13,7 +13,7 @@
   },
   "main": "index.ts",
   "scripts": {
-    "index": "ts-node src/index.ts"
+    "examples": "ts-node examples/examples.ts"
   },
   "author": "KevTVKevin, Sardoniac",
   "devDependencies": {

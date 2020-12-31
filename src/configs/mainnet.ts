@@ -17,5 +17,6 @@ let hmyConfig = {
 
 export let mainnet = {
     ethConfig,
-    hmyConfig
+    hmyConfig,
+    testnet: false
 }
