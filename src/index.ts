@@ -1,7 +1,8 @@
 import { mainnet } from './configs/mainnet'
-import { testnet } from './configs/testnet'
 import * as Utils from './utils'
 import { OperationCanceledException } from 'typescript'
+const { BridgeSDK, TOKEN, EXCHANGE_MODE, STATUS } = require('bridge-sdk');
+const bridgeConfigs = require('bridge-sdk/lib/configs');
 
 export enum TYPE {
     ETH = "Ethereum",
@@ -135,49 +136,81 @@ export class DynamicSalary {
 
         }
 
-        sendOneToOne = async (
+        send = async (
+            senderType: TYPE,
             privateKey: string,
+            senderAddress: string,
+            receiverType: TYPE,
             receiverAddress: string,
             amount: number,
+            contractAddress?: string
         ) => {
-            return Utils.sendOne(privateKey, receiverAddress, amount, this.configs)
+            if (senderType == TYPE.ETH && receiverType == TYPE.ETH) {
+                return Utils.sendEth(privateKey, receiverAddress, amount, this.configs)
+            } else if (senderType == TYPE.ONE && receiverType == TYPE.ONE) {
+                return Utils.sendOne(privateKey, receiverAddress, amount, this.configs)
+            } else if (senderType == TYPE.ONE && receiverType == TYPE.ETH || senderType == TYPE.ETH && receiverType == TYPE.ONE) {
+                const bridgeSDK = new BridgeSDK({ logLevel: 2 })
+
+                let oneAddress: string
+                let ethAddress: string
+
+                if (this.configs.testnet) {
+                    await bridgeSDK.init(bridgeConfigs.testnet)
+                } else {
+                    await bridgeSDK.init(bridgeConfigs.mainnet)
+                }
+                if (senderType == TYPE.ONE) {
+                    await bridgeSDK.addOneWallet(privateKey)
+                    oneAddress = senderAddress
+                    ethAddress = receiverAddress
+                } else if (senderType == TYPE.ETH) {
+                    await bridgeSDK.addEthWallet(privateKey)
+                    oneAddress = receiverAddress
+                    ethAddress = senderAddress
+                }
+
+                let operationId
+
+                let intervalId = setInterval(async () => {
+                    if (operationId) {
+                        const operation = await bridgeSDK.api.getOperation(operationId)
+                        if (operation.status !== STATUS.IN_PROGRESS) {
+                            clearInterval(intervalId)
+                            process.exit()
+                        }
+                    }
+                }, 4000)
+
+                let exchange_mode: typeof EXCHANGE_MODE
+
+                if (senderType == TYPE.ONE) {
+                    exchange_mode = EXCHANGE_MODE.ONE_TO_ETH
+                } else if (senderType == TYPE.ETH) {
+                    exchange_mode = EXCHANGE_MODE.ETH_TO_ONE
+                }
+
+                try {
+                    await bridgeSDK.sendToken(
+                        {
+                            type: exchange_mode,
+                            token: TOKEN.ERC20,
+                            amount: amount,
+                            oneAddress: oneAddress,
+                            ethAddress: ethAddress,
+                            erc20Address: contractAddress
+                        },
+                        id => (operationId = id)
+                    )
+                } catch (e) {
+                    console.log('Error:', e.message)
+                }
+
+                process.exit();
+
+            }
         }
 
-        sendEthToEth = async (
-            privateKey: string,
-            receiverAddress: string,
-            amount: number
-        ) => {
-            return Utils.sendEth(privateKey, receiverAddress, amount, this.configs)
-        }
-
-}   
-
-let ds = new DynamicSalary(testnet)
-
-ds.getTransactionData(
-    TYPE.ONE,
-    "one1akph3q7a0vtfzad2lau0cfvsvkrnc5fzf487ly",
-    TYPE.ETH,
-    "0x430506383F1Ac31F5FdF5b49ADb77faC604657B2", 
-).then((data) => {
-    console.log(data)
-})
-
-ds.sendOneToOne(
-    "0x936224fc6acd1d8e4dab100c054ed7305acf520207b2f0c15257d570d5fd56de",
-    "one1xlk8jnxw68nwksxtqt39t0ggghfnuex5pak7j4",
-    0.0000001
-).then(res => {
-    console.log(res)
-})
-
-ds.sendEthToEth(
-    "cbcf3af28e37d8b69c4ea5856f2727f57ad01d3e86bec054d71fa83fc246f35b",
-    "0x4778D03bB3E169b920Cbf826F9A931A15574fE28",
-    0.0000001
-).then(res => {
-    console.log(res)
-})
+}
 
     
